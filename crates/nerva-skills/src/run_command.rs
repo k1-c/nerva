@@ -11,7 +11,7 @@ static METADATA: LazyLock<ToolMetadata> = LazyLock::new(|| ToolMetadata {
     confirmation_required: true,
 });
 
-static ALLOWED_COMMANDS: LazyLock<HashSet<String>> = LazyLock::new(|| {
+static DEFAULT_ALLOWED: LazyLock<HashSet<String>> = LazyLock::new(|| {
     HashSet::from([
         "ls".into(),
         "pwd".into(),
@@ -29,7 +29,23 @@ static ALLOWED_COMMANDS: LazyLock<HashSet<String>> = LazyLock::new(|| {
     ])
 });
 
-pub struct RunCommandSafeSkill;
+pub struct RunCommandSafeSkill {
+    allowed: HashSet<String>,
+}
+
+impl Default for RunCommandSafeSkill {
+    fn default() -> Self {
+        Self {
+            allowed: DEFAULT_ALLOWED.clone(),
+        }
+    }
+}
+
+impl RunCommandSafeSkill {
+    pub fn with_allowed(allowed: HashSet<String>) -> Self {
+        Self { allowed }
+    }
+}
 
 #[async_trait::async_trait]
 impl Skill for RunCommandSafeSkill {
@@ -54,7 +70,7 @@ impl Skill for RunCommandSafeSkill {
             .unwrap_or_default();
 
         let (stdout, exit_code) =
-            nerva_os::process::run_command_safe(cmd, &args, &ALLOWED_COMMANDS).await?;
+            nerva_os::process::run_command_safe(cmd, &args, &self.allowed).await?;
 
         Ok(serde_json::json!({
             "stdout": stdout,
