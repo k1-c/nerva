@@ -38,6 +38,12 @@ enum Commands {
         #[arg(long, default_value_t = 10)]
         count: usize,
     },
+    /// Show recent suggestions from watchers
+    Suggestions {
+        /// Number of suggestions to show
+        #[arg(long, default_value_t = 10)]
+        count: usize,
+    },
     /// Show daemon status
     Status,
 }
@@ -76,6 +82,10 @@ async fn main() -> anyhow::Result<()> {
         Commands::Tools => serde_json::json!({ "command": "list_tools" }),
         Commands::Log { count } => serde_json::json!({
             "command": "get_log",
+            "count": count,
+        }),
+        Commands::Suggestions { count } => serde_json::json!({
+            "command": "get_suggestions",
             "count": count,
         }),
         Commands::Status => serde_json::json!({ "command": "status" }),
