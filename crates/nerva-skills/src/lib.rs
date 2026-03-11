@@ -12,6 +12,7 @@ pub mod plugin_loader;
 mod run_command;
 pub mod script_skill;
 mod summarize_screen;
+pub mod watchers;
 
 use std::sync::Arc;
 
