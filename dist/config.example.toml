@@ -38,3 +38,18 @@ enabled = true
 enabled = false
 ollama_url = "http://localhost:11434"
 model = "moondream"
+
+[llm]
+enabled = false
+# Provider: "claude", "openai", or "ollama"
+provider = "claude"
+model = "claude-sonnet-4-20250514"
+# API key (optional — can also use ANTHROPIC_API_KEY or OPENAI_API_KEY env vars)
+# api_key = "sk-..."
+# Base URL override (for openai-compatible endpoints or ollama)
+# base_url = "http://localhost:11434"
+#
+# Examples:
+#   Claude:  provider = "claude",  model = "claude-sonnet-4-20250514"
+#   OpenAI:  provider = "openai",  model = "gpt-4o"
+#   Ollama:  provider = "ollama",  model = "qwen2.5:7b", base_url = "http://localhost:11434"

@@ -57,12 +57,15 @@
 
 **Goal:** Automate the natural language → tool invocation pipeline with an LLM.
 
-- [ ] Interpreter — natural language → structured intent
-- [ ] Planner — intent → tool execution plan
-- [ ] Orchestrator — sequential plan execution with error handling
-- [ ] LLM backend abstraction (local Ollama / cloud API)
-- [ ] Confirmation flow — interactive confirmation for Dangerous tier operations
-- [ ] Execution memory — short-term memory during task execution
+- [x] LLM client — Ollama chat API with tool calling support (`llm.rs`)
+- [x] AgentRuntime — unified interpret → plan → execute loop (`agent.rs`)
+  - Interpreter: LLM with system prompt + tool definitions → tool calls
+  - Planner: multi-round tool calling (up to 10 rounds)
+  - Orchestrator: sequential execution via CapabilityBus with result feedback
+- [x] LLM backend abstraction — configurable Ollama URL and model via `[llm]` config
+- [x] `ask` command — natural language queries via daemon protocol and CLI
+- [x] Execution memory — conversation history maintained across tool-call rounds
+- [x] Confirmation flow — headless auto-approve with risk-tier logging (UI confirmation deferred to Phase 6)
 
 ---
 
