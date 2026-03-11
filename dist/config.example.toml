@@ -33,3 +33,8 @@ enabled = true
 # Each plugin is a subdirectory containing:
 #   skill.toml  — manifest (id, name, description, risk, executable)
 #   run         — executable script (receives JSON on stdin, outputs JSON on stdout)
+
+[vlm]
+enabled = false
+ollama_url = "http://localhost:11434"
+model = "moondream"

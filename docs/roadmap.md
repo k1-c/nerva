@@ -44,12 +44,12 @@
 
 **Goal:** Understand screen state and enable context-aware operations.
 
-- [ ] `get_active_window` skill via compositor API
-- [ ] Improved `capture_screen` via PipeWire / portal for secure capture
-- [ ] OCR integration — extract text from screenshots with tesseract / PaddleOCR
-- [ ] VLM integration — interpret screen images with a local VLM
-- [ ] `summarize_screen` skill — capture → OCR/VLM → summarize
-- [ ] Context assembly — combine active window + clipboard + screen text
+- [x] `get_active_window` skill via compositor API (hyprctl)
+- [x] Improved `capture_screen` — portal (xdg-desktop-portal) with grim fallback, region/window capture
+- [x] OCR integration — `ocr_screen` skill via tesseract
+- [x] VLM integration — Ollama HTTP client with vision model support (moondream, llava, etc.)
+- [x] `summarize_screen` skill — capture → VLM (with OCR fallback)
+- [x] Context assembly — `DesktopContext` struct + `gather_context` skill (active window + clipboard + screen text)
 
 ---
 
