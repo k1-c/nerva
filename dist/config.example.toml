@@ -39,6 +39,11 @@ enabled = false
 ollama_url = "http://localhost:11434"
 model = "moondream"
 
+[watchers]
+enabled = false
+# Send desktop notifications for suggestions
+notify = true
+
 [llm]
 enabled = false
 # Provider: "claude", "openai", or "ollama"

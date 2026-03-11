@@ -73,11 +73,12 @@
 
 **Goal:** React to state changes and provide suggestions as a resident agent.
 
-- [ ] Watcher framework — common event monitoring infrastructure
-- [ ] Clipboard watcher — URL → offer summary, code → offer explanation
-- [ ] Active window watcher — suggest relevant actions on app switch
-- [ ] Suggestion mode — display as suggestions, not auto-execute
-- [ ] Notification integration — show suggestions as desktop notifications
+- [x] Watcher framework — `Watcher` trait + `WatcherManager` with per-watcher poll intervals
+- [x] Clipboard watcher — detects URLs and file paths, suggests relevant actions
+- [x] Active window watcher — detects app switches, suggests context-aware actions
+- [x] Suggestion mode — buffered suggestions accessible via `get_suggestions` command and CLI
+- [x] Notification integration — optional desktop notifications via notify-send
+- [x] Daemon integration — watcher lifecycle management, suggestion store, configurable via `[watchers]`
 
 ---
 
