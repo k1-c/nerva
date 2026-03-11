@@ -28,3 +28,5 @@ async-trait = "0.1"
 clap = { version = "4", features = ["derive"] }
 toml = "0.8"
 dirs = "6"
+reqwest = { version = "0.12", features = ["json"] }
+base64 = "0.22"

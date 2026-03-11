@@ -11,6 +11,7 @@ pub struct NervaConfig {
     pub policy: PolicyConfig,
     pub commands: CommandsConfig,
     pub plugins: PluginsConfig,
+    pub vlm: VlmConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -52,6 +53,24 @@ impl PluginsConfig {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
+pub struct VlmConfig {
+    pub enabled: bool,
+    pub ollama_url: String,
+    pub model: String,
+}
+
+impl Default for VlmConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            ollama_url: "http://localhost:11434".into(),
+            model: "moondream".into(),
+        }
+    }
+}
+
 impl Default for NervaConfig {
     fn default() -> Self {
         Self {
@@ -59,6 +78,7 @@ impl Default for NervaConfig {
             policy: PolicyConfig::default(),
             commands: CommandsConfig::default(),
             plugins: PluginsConfig::default(),
+            vlm: VlmConfig::default(),
         }
     }
 }

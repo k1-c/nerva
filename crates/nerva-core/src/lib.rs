@@ -2,11 +2,13 @@ pub mod bus;
 #[cfg(test)]
 mod bus_test;
 pub mod config;
+pub mod context;
 pub mod error;
 pub mod policy;
 pub mod registry;
 pub mod skill;
 pub mod types;
+pub mod vlm;
 
 pub use bus::CapabilityBus;
 pub use error::NervaError;
