@@ -5,11 +5,16 @@ use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::UnixListener;
 
 use nerva_core::CapabilityBus;
+use nerva_core::agent::AgentRuntime;
 
 use crate::handler;
 use crate::protocol::{Request, Response};
 
-pub async fn run_server(bus: Arc<CapabilityBus>, socket_path: &Path) -> anyhow::Result<()> {
+pub async fn run_server(
+    bus: Arc<CapabilityBus>,
+    agent: Option<Arc<AgentRuntime>>,
+    socket_path: &Path,
+) -> anyhow::Result<()> {
     // Ensure parent directory exists
     if let Some(parent) = socket_path.parent() {
         tokio::fs::create_dir_all(parent).await?;
@@ -24,6 +29,7 @@ pub async fn run_server(bus: Arc<CapabilityBus>, socket_path: &Path) -> anyhow::
     loop {
         let (stream, _) = listener.accept().await?;
         let bus = bus.clone();
+        let agent = agent.clone();
 
         tokio::spawn(async move {
             let (reader, mut writer) = stream.into_split();
@@ -36,7 +42,7 @@ pub async fn run_server(bus: Arc<CapabilityBus>, socket_path: &Path) -> anyhow::
                     Ok(0) => break, // EOF
                     Ok(_) => {
                         let response = match serde_json::from_str::<Request>(line.trim()) {
-                            Ok(req) => handler::handle(&bus, req).await,
+                            Ok(req) => handler::handle(&bus, &agent, req).await,
                             Err(e) => Response::error(format!("Invalid request: {e}")),
                         };
 

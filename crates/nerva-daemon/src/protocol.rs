@@ -8,6 +8,9 @@ pub enum Request {
         #[serde(default)]
         input: serde_json::Value,
     },
+    Ask {
+        query: String,
+    },
     ListTools,
     GetLog {
         #[serde(default = "default_count")]

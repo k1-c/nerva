@@ -7,6 +7,8 @@ use std::sync::Arc;
 
 use clap::Parser;
 use nerva_core::config::NervaConfig;
+use nerva_core::agent::AgentRuntime;
+use nerva_core::llm::{ClaudeBackend, OllamaBackend, OpenAiBackend};
 use nerva_core::{CapabilityBus, PolicyEngine, ToolRegistry};
 
 #[derive(Parser)]
@@ -69,6 +71,48 @@ async fn main() -> anyhow::Result<()> {
     let tool_count = bus.registry().list().await.len();
     tracing::info!(tool_count, "Skills registered");
 
+    // Initialize agent runtime if LLM is configured
+    let agent = if config.llm.enabled {
+        let provider = config.llm.provider.as_str();
+        let model = &config.llm.model;
+
+        let backend: Option<Box<dyn nerva_core::llm::LlmBackend>> = match provider {
+            "claude" => {
+                let api_key = config.llm.resolve_api_key().unwrap_or_else(|| {
+                    tracing::warn!("No API key for Claude. Set api_key in [llm] or ANTHROPIC_API_KEY env var.");
+                    String::new()
+                });
+                Some(Box::new(ClaudeBackend::new(api_key, model)))
+            }
+            "openai" => {
+                let api_key = config.llm.resolve_api_key().unwrap_or_else(|| {
+                    tracing::warn!("No API key for OpenAI. Set api_key in [llm] or OPENAI_API_KEY env var.");
+                    String::new()
+                });
+                Some(Box::new(OpenAiBackend::new(api_key, model, config.llm.base_url.clone())))
+            }
+            "ollama" => {
+                let base_url = config.llm.base_url.as_deref().unwrap_or("http://localhost:11434");
+                Some(Box::new(OllamaBackend::new(base_url, model)))
+            }
+            other => {
+                tracing::error!(provider = other, "Unknown LLM provider, agent disabled");
+                None
+            }
+        };
+
+        if let Some(backend) = backend {
+            let runtime = AgentRuntime::new(backend, bus.clone());
+            tracing::info!(provider, model = %config.llm.model, "Agent runtime enabled");
+            Some(Arc::new(runtime))
+        } else {
+            None
+        }
+    } else {
+        tracing::info!("Agent runtime disabled (configure [llm] to enable)");
+        None
+    };
+
     let socket_path = config.socket_path();
 
     // Graceful shutdown on SIGTERM/SIGINT
@@ -85,7 +129,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     tokio::select! {
-        result = server::run_server(bus, &socket_path) => {
+        result = server::run_server(bus, agent, &socket_path) => {
             result?;
         }
         _ = shutdown => {
