@@ -3,9 +3,11 @@ use std::sync::Arc;
 
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::UnixListener;
+use tokio::sync::Mutex;
 
 use nerva_core::CapabilityBus;
 use nerva_core::agent::AgentRuntime;
+use nerva_core::watcher::Suggestion;
 
 use crate::handler;
 use crate::protocol::{Request, Response};
@@ -13,6 +15,7 @@ use crate::protocol::{Request, Response};
 pub async fn run_server(
     bus: Arc<CapabilityBus>,
     agent: Option<Arc<AgentRuntime>>,
+    suggestions: Arc<Mutex<Vec<Suggestion>>>,
     socket_path: &Path,
 ) -> anyhow::Result<()> {
     // Ensure parent directory exists
@@ -30,6 +33,7 @@ pub async fn run_server(
         let (stream, _) = listener.accept().await?;
         let bus = bus.clone();
         let agent = agent.clone();
+        let suggestions = suggestions.clone();
 
         tokio::spawn(async move {
             let (reader, mut writer) = stream.into_split();
@@ -42,7 +46,7 @@ pub async fn run_server(
                     Ok(0) => break, // EOF
                     Ok(_) => {
                         let response = match serde_json::from_str::<Request>(line.trim()) {
-                            Ok(req) => handler::handle(&bus, &agent, req).await,
+                            Ok(req) => handler::handle(&bus, &agent, &suggestions, req).await,
                             Err(e) => Response::error(format!("Invalid request: {e}")),
                         };
 

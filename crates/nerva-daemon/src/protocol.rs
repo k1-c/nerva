@@ -17,6 +17,11 @@ pub enum Request {
         count: usize,
     },
     Status,
+    /// Get recent suggestions from watchers.
+    GetSuggestions {
+        #[serde(default = "default_count")]
+        count: usize,
+    },
 }
 
 fn default_count() -> usize {

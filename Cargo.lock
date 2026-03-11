@@ -873,6 +873,7 @@ dependencies = [
  "anyhow",
  "clap",
  "nerva-core",
+ "nerva-os",
  "nerva-skills",
  "serde",
  "serde_json",

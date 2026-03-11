@@ -6,10 +6,12 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use clap::Parser;
-use nerva_core::config::NervaConfig;
 use nerva_core::agent::AgentRuntime;
+use nerva_core::config::NervaConfig;
 use nerva_core::llm::{ClaudeBackend, OllamaBackend, OpenAiBackend};
+use nerva_core::watcher::Suggestion;
 use nerva_core::{CapabilityBus, PolicyEngine, ToolRegistry};
+use tokio::sync::Mutex;
 
 #[derive(Parser)]
 #[command(name = "nervad", about = "Nerva AI Desktop Agent Daemon")]
@@ -113,6 +115,58 @@ async fn main() -> anyhow::Result<()> {
         None
     };
 
+    // Initialize watcher system
+    let suggestions: Arc<Mutex<Vec<Suggestion>>> = Arc::new(Mutex::new(Vec::new()));
+
+    if config.watchers.enabled {
+        let mut manager = nerva_core::watcher::WatcherManager::new(64);
+        nerva_skills::watchers::register_all_watchers(&mut manager);
+        tracing::info!(count = manager.count(), "Watchers started");
+
+        let suggestions_for_watcher = suggestions.clone();
+        let notify_enabled = config.watchers.notify;
+
+        tokio::spawn(async move {
+            loop {
+                match manager.next_suggestion().await {
+                    Some(suggestion) => {
+                        tracing::debug!(
+                            source = %suggestion.source,
+                            title = %suggestion.title,
+                            "Suggestion received"
+                        );
+
+                        // Send desktop notification if enabled
+                        if notify_enabled {
+                            let _ = nerva_os::notification::send_notification(
+                                &suggestion.title,
+                                Some(suggestion.body.as_str()),
+                            )
+                            .await;
+                        }
+
+                        // Buffer the suggestion
+                        let mut store = suggestions_for_watcher.lock().await;
+                        store.push(suggestion);
+
+                        // Keep buffer bounded
+                        const MAX_SUGGESTIONS: usize = 100;
+                        if store.len() > MAX_SUGGESTIONS {
+                            let drain_count = store.len() - MAX_SUGGESTIONS;
+                            store.drain(..drain_count);
+                        }
+                    }
+                    None => {
+                        tracing::info!("Watcher channel closed");
+                        break;
+                    }
+                }
+            }
+        });
+    } else {
+        tracing::info!("Watchers disabled (configure [watchers] to enable)");
+    }
+
     let socket_path = config.socket_path();
 
     // Graceful shutdown on SIGTERM/SIGINT
@@ -129,7 +183,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     tokio::select! {
-        result = server::run_server(bus, agent, &socket_path) => {
+        result = server::run_server(bus, agent, suggestions, &socket_path) => {
             result?;
         }
         _ = shutdown => {

@@ -10,6 +10,7 @@ path = "src/main.rs"
 
 [dependencies]
 nerva-core = { path = "../nerva-core" }
+nerva-os = { path = "../nerva-os" }
 nerva-skills = { path = "../nerva-skills" }
 tokio = { workspace = true }
 serde = { workspace = true }
