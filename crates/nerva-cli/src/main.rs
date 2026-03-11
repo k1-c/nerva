@@ -25,6 +25,11 @@ enum Commands {
         #[arg(long, default_value = "{}")]
         input: String,
     },
+    /// Ask the agent a question in natural language
+    Ask {
+        /// Natural language query
+        query: Vec<String>,
+    },
     /// List available tools
     Tools,
     /// Show recent execution log
@@ -56,6 +61,16 @@ async fn main() -> anyhow::Result<()> {
                 "command": "execute",
                 "tool_id": tool_id,
                 "input": input,
+            })
+        }
+        Commands::Ask { query } => {
+            let query = query.join(" ");
+            if query.is_empty() {
+                anyhow::bail!("Query cannot be empty");
+            }
+            serde_json::json!({
+                "command": "ask",
+                "query": query,
             })
         }
         Commands::Tools => serde_json::json!({ "command": "list_tools" }),
