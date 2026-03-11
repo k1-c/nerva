@@ -1,0 +1,6 @@
+/target
+.direnv
+result
+
+# Claude
+.claude/settings.local.json

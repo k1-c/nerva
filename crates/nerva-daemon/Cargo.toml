@@ -1,0 +1,20 @@
+[package]
+name = "nerva-daemon"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "nervad"
+path = "src/main.rs"
+
+[dependencies]
+nerva-core = { path = "../nerva-core" }
+nerva-skills = { path = "../nerva-skills" }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+clap = { workspace = true }
