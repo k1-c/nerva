@@ -13,6 +13,7 @@ pub struct NervaConfig {
     pub plugins: PluginsConfig,
     pub vlm: VlmConfig,
     pub llm: LlmConfig,
+    pub watchers: WatchersConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -110,6 +111,23 @@ impl LlmConfig {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
+pub struct WatchersConfig {
+    pub enabled: bool,
+    /// Send suggestions as desktop notifications.
+    pub notify: bool,
+}
+
+impl Default for WatchersConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            notify: true,
+        }
+    }
+}
+
 impl Default for NervaConfig {
     fn default() -> Self {
         Self {
@@ -119,6 +137,7 @@ impl Default for NervaConfig {
             plugins: PluginsConfig::default(),
             vlm: VlmConfig::default(),
             llm: LlmConfig::default(),
+            watchers: WatchersConfig::default(),
         }
     }
 }

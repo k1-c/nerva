@@ -11,6 +11,7 @@ pub mod registry;
 pub mod skill;
 pub mod types;
 pub mod vlm;
+pub mod watcher;
 
 pub use bus::CapabilityBus;
 pub use error::NervaError;
