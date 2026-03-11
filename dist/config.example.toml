@@ -1,0 +1,35 @@
+# Nerva configuration file
+# Place at ~/.config/nerva/config.toml
+
+[daemon]
+# socket_path = "/run/user/1000/nerva/nervad.sock"
+log_level = "info"
+
+[policy]
+auto_approve_safe = true
+auto_approve_caution = false
+# blocked_tools = ["run_command_safe"]
+
+[commands]
+allowed = [
+    "ls",
+    "pwd",
+    "whoami",
+    "date",
+    "uname",
+    "cat",
+    "head",
+    "tail",
+    "wc",
+    "df",
+    "free",
+    "uptime",
+    "hostname",
+]
+
+[plugins]
+enabled = true
+# skills_dir = "~/.config/nerva/skills"
+# Each plugin is a subdirectory containing:
+#   skill.toml  — manifest (id, name, description, risk, executable)
+#   run         — executable script (receives JSON on stdin, outputs JSON on stdout)

@@ -1,0 +1,13 @@
+[Unit]
+Description=Nerva AI Desktop Agent Daemon
+Documentation=https://github.com/k1-c/nerva
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.cargo/bin/nervad
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
