@@ -1,9 +1,11 @@
+pub mod agent;
 pub mod bus;
 #[cfg(test)]
 mod bus_test;
 pub mod config;
 pub mod context;
 pub mod error;
+pub mod llm;
 pub mod policy;
 pub mod registry;
 pub mod skill;

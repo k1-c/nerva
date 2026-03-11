@@ -12,6 +12,7 @@ pub struct NervaConfig {
     pub commands: CommandsConfig,
     pub plugins: PluginsConfig,
     pub vlm: VlmConfig,
+    pub llm: LlmConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -71,6 +72,44 @@ impl Default for VlmConfig {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
+pub struct LlmConfig {
+    pub enabled: bool,
+    /// Provider: "claude", "openai", or "ollama"
+    pub provider: String,
+    pub model: String,
+    /// API key (for claude/openai). Can also be set via ANTHROPIC_API_KEY or OPENAI_API_KEY env vars.
+    pub api_key: Option<String>,
+    /// Base URL override (for openai-compatible endpoints or ollama)
+    pub base_url: Option<String>,
+}
+
+impl Default for LlmConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            provider: "claude".into(),
+            model: "claude-sonnet-4-20250514".into(),
+            api_key: None,
+            base_url: None,
+        }
+    }
+}
+
+impl LlmConfig {
+    /// Resolve the API key from config or environment variable.
+    pub fn resolve_api_key(&self) -> Option<String> {
+        self.api_key.clone().or_else(|| {
+            match self.provider.as_str() {
+                "claude" => std::env::var("ANTHROPIC_API_KEY").ok(),
+                "openai" => std::env::var("OPENAI_API_KEY").ok(),
+                _ => None,
+            }
+        })
+    }
+}
+
 impl Default for NervaConfig {
     fn default() -> Self {
         Self {
@@ -79,6 +118,7 @@ impl Default for NervaConfig {
             commands: CommandsConfig::default(),
             plugins: PluginsConfig::default(),
             vlm: VlmConfig::default(),
+            llm: LlmConfig::default(),
         }
     }
 }

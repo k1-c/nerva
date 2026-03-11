@@ -60,11 +60,12 @@ impl CapabilityBus {
                 return result;
             }
             PolicyDecision::RequireConfirmation => {
-                // TODO: implement confirmation flow
-                // For now, auto-approve in Phase 1
+                // In daemon mode, auto-approve with a warning.
+                // Full confirmation flow requires a UI (Phase 6).
                 tracing::warn!(
                     tool_id = %request.tool_id,
-                    "Tool requires confirmation but auto-approving (Phase 1)"
+                    risk = ?skill.metadata().risk,
+                    "Tool requires confirmation — auto-approving in headless mode"
                 );
             }
             PolicyDecision::Allow => {}
