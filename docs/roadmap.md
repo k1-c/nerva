@@ -9,30 +9,34 @@
 - [x] Cargo workspace + 5 crate structure
 - [x] `nerva-core`: CapabilityBus, ToolRegistry, PolicyEngine, Skill trait
 - [x] `nerva-os`: process, clipboard, screenshot, wayland integration stubs
-- [x] `nerva-skills`: 5 MVP skills
+- [x] `nerva-skills`: 9 built-in skills
   - `launch_app` (Safe)
   - `list_windows` (Safe)
   - `capture_screen` (Safe)
   - `clipboard_read` (Safe)
   - `run_command_safe` (Caution)
+  - `notify` (Safe)
+  - `open_path` (Safe)
+  - `get_active_window` (Safe)
+  - `focus_window` (Caution)
 - [x] `nerva-daemon`: Unix socket server (nervad)
 - [x] `nerva-cli`: CLI client (nerva)
 - [x] JSON-lines protocol
 - [x] PolicyEngine with risk tiers
 - [x] Execution audit log
+- [x] Configuration file support (TOML) — `~/.config/nerva/config.toml`
+- [x] Graceful shutdown (SIGTERM/SIGINT signal handling)
+- [x] systemd user service unit file (`dist/nervad.service`)
+- [x] Integration tests (daemon + CLI end-to-end, 5 tests)
+- [x] Unit tests (CapabilityBus, PolicyEngine, config, 9 tests)
 
 ### TODO
 
-- [ ] Integration tests (daemon + CLI end-to-end)
-- [ ] Configuration file support (TOML)
-- [ ] Graceful shutdown (signal handling)
-- [ ] systemd user service unit file
-- [ ] Additional safe skills
-  - `notify` — send desktop notifications
-  - `open_path` — open a file or URL
-  - `get_active_window` — get current active window info
-  - `focus_window` — focus a specific window
-- [ ] Dynamic skill registration / plugin directory
+- [x] Dynamic skill registration / plugin directory
+  - Script-based plugins: `skill.toml` manifest + executable
+  - Plugin directory: `~/.config/nerva/skills/`
+  - ID conflict detection (plugins cannot override built-in skills)
+  - Configurable via `[plugins]` section in config
 
 ---
 
