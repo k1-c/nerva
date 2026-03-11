@@ -12,6 +12,7 @@ pub enum PolicyDecision {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PolicyConfig {
     pub auto_approve_safe: bool,
     pub auto_approve_caution: bool,

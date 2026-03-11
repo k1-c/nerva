@@ -1,4 +1,7 @@
 pub mod bus;
+#[cfg(test)]
+mod bus_test;
+pub mod config;
 pub mod error;
 pub mod policy;
 pub mod registry;

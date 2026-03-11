@@ -27,6 +27,14 @@ impl ToolRegistry {
         self.skills.read().await.get(id).cloned()
     }
 
+    pub async fn unregister(&self, id: &str) -> bool {
+        let removed = self.skills.write().await.remove(id).is_some();
+        if removed {
+            tracing::info!(tool_id = %id, "Unregistered skill");
+        }
+        removed
+    }
+
     pub async fn list(&self) -> Vec<ToolMetadata> {
         self.skills
             .read()
@@ -34,6 +42,10 @@ impl ToolRegistry {
             .values()
             .map(|s| s.metadata().clone())
             .collect()
+    }
+
+    pub async fn contains(&self, id: &str) -> bool {
+        self.skills.read().await.contains_key(id)
     }
 }
 
